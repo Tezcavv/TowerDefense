@@ -14,6 +14,9 @@ public class Enemy : MonoBehaviour
     protected float goldOnDeath = 30f;
 
 
+    //Se muore torna nella pool
+    //Se muore guadagni gold
+
 
     //largamente migliorabile
     public float EffectivenessMultiplier(Type enemyDamageType) {
