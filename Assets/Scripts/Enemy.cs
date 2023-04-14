@@ -1,5 +1,9 @@
+using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 using UnityEngine.Events;
@@ -16,23 +20,136 @@ public class Enemy : MonoBehaviour
     public int speed = 10;
     private float TimeToCrossATile => 10 / speed;
 
-    //nodes for path finding
+    #region PathFinding Variables
     private List<Node> walkableNodes;
-    private List<Tile> pathToGoal;
+    private List<Node> openNodes;
+    private List<Node> closedNodes;
+    private List<Node> pathToGoal;
 
-    //events
+    private Node goalNode;
+    private Node startNode;
+
+    public Tile StartTile;
+    #endregion
+    
     public UnityEvent<float> OnDeath;
+    public UnityEvent OnGoalReached;
     
 
     private void Start() {
-        
         PopulateNodes();
+        startNode = walkableNodes.First(node => node.tile.transform.position == StartTile.transform.position);
+        FindPathToGoal();
 
+        MoveToGoalFrom(startNode);
+
+    }
+
+
+
+    #region PathFinding
+    void FindPathToGoal() {
+
+        openNodes = new List<Node>();
+        closedNodes = new List<Node>();
+        pathToGoal = new List<Node>();
+
+        goalNode = FindClosestGoal();
+
+        startNode.h = Vector3.Distance(startNode.TilePosition, goalNode.TilePosition); //distanza assoluta dalla fine
+        startNode.g = 0; //distanza percorsa dall'inizio
+        startNode.f = startNode.h; //all'inizio è uguale per formula
+
+        openNodes.Add(startNode);
+        Search(startNode);
+
+    }
+    public void Search(Node parent) {
+
+
+        //cerco tutti i nodi vicini
+        List<Node> adjacentNodes = FindAdjacentNodes(parent);
+
+
+        foreach (Node node in adjacentNodes) {
+
+            //aggiungo il nodo alla lista di nodi cercabili
+            openNodes.Add(node);
+            node.h = Vector3.Distance(node.TilePosition, goalNode.TilePosition);
+            node.g = parent.g + Vector3.Distance(node.TilePosition, parent.TilePosition);
+            node.f = node.h + node.g;
+            node.parent = parent;
+
+            // controllo se tra i nodi trovati c'è il risultato
+            if (node.tile.IsGoal) {
+                AddCorrectPath(node);
+                return;
+            }
+
+        }
+
+        closedNodes.Add(parent);
+        openNodes.Remove(parent);
+
+        Search( openNodes.OrderBy(node => node.f).First() );
+
+    }
+
+    public void AddCorrectPath(Node node) {
+        pathToGoal.Add(node);
+        if (node.parent == null) {
+            pathToGoal.Reverse();
+            return;
+        }
+        AddCorrectPath(node.parent);
+
+
+    }
+
+    private List<Node> FindAdjacentNodes(Node parent) {
+
+        List<Node> result = new List<Node>();
+        foreach(Tile tile in parent.tile.AdjacentTiles) {
+           
+           
+           Node tempNode = walkableNodes.FirstOrDefault(node =>
+                                node.TilePosition == tile.transform.position
+                             && !openNodes.Contains(node)
+                             && !closedNodes.Contains(node));
+            
+            if (tempNode != null)
+                result.Add(tempNode);
+
+        }
+        return result;
+        
+    }
+
+    private Node FindClosestGoal() {
+        //per adesso prende il primo che trova
+        return walkableNodes.Find(node => node.tile.IsGoal);
+    }
+
+    private Node nextNode;
+    private void MoveToGoalFrom(Node currentNode) {
+
+        if (currentNode == goalNode) {
+            OnGoalReached?.Invoke();
+            Die();
+            return;
+        }
+
+        nextNode = pathToGoal[pathToGoal.IndexOf(currentNode)+1];
+        Vector3 destination = new Vector3(nextNode.TilePosition.x,
+                                            transform.position.y, 
+                                            nextNode.TilePosition.z);
+        transform.DOMove(destination, TimeToCrossATile).OnComplete(() => MoveToGoalFrom(nextNode));
+        
     }
 
     void PopulateNodes() {
         walkableNodes = new List<Node>();
-        foreach (Tile tile in Grid.Instance.WalkableTiles) {
+        foreach (Tile tile in GridMap.Instance.WalkableTiles) {
             walkableNodes.Add(new Node(tile));
         }
 
@@ -40,7 +157,7 @@ public class Enemy : MonoBehaviour
 
     //Se muore torna nella pool
     //Se muore guadagni gold
-
+    #endregion
     public void GetDamage(int damage) {
         hp -= damage;
 
@@ -60,13 +177,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void FindPathToGoal() {
-
-
-
-        //listanodiwalkabili
-        //per ogni nodo gli 
-    }
 
     //largamente migliorabile
     public float EffectivenessMultiplier(Type enemyDamageType) {

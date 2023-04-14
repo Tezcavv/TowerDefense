@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Grid : MonoBehaviour
+public class GridMap : MonoBehaviour
 {
 
-    public static Grid Instance { get; private set; }
+    public static GridMap Instance { get; private set; }
 
     private  List<Tile> allTiles= new List<Tile>();
     private  List<Tile> walkableTiles= new List<Tile>();
@@ -22,14 +22,13 @@ public class Grid : MonoBehaviour
     #endregion
 
     private void Awake() {
-
         SetInstance();
-
         allTiles = FindObjectsOfType<Tile>().ToList();
         walkableTiles = allTiles.FindAll(tile => tile.IsWalkable);
         buildableTiles = allTiles.FindAll(tile => !tile.IsWalkable);
-
         InitMatrix();
+    }
+    private void Start() {
 
     }
 
@@ -37,20 +36,27 @@ public class Grid : MonoBehaviour
     private void InitMatrix() {
         tileMatrix = new List<List<Tile>>();
 
-        int rowCount = 0;
-        foreach (Tile node in allTiles) {
-            if (tileMatrix[rowCount].Count == 0) {
-                //primo elemento della riga
-                tileMatrix[rowCount].Add(node);
-            } else if (node.transform.position.x == tileMatrix[rowCount][0].transform.position.x) {
-                tileMatrix[rowCount].Add(node);
-            } else {
-                //creo nuova riga
-                rowCount++;
-                tileMatrix.Add(new List<Tile> { node });
-            }
+        allTiles.Sort((tile2, tile1) => tile1.transform.position.x.CompareTo(tile2.transform.position.x));
 
-        }
+        tileMatrix = allTiles.GroupBy(tile => tile.transform.position.x)
+                             .Select(row => row.ToList())
+                             .ToList();
+
+
+        int rowCount = 0;
+        //foreach (Tile tile in allTiles) {
+
+
+        //    if (tile.transform.position.x == tileMatrix[rowCount][0].transform.position.x) {
+        //        tileMatrix[rowCount].Add(tile);
+        //        continue;
+        //    }
+            
+        //    tileMatrix.Add(new List<Tile> { tile });
+        //    rowCount++;
+
+        //}
+
         foreach (List<Tile> row in tileMatrix) {
             row.Sort((node2, node1) => node1.transform.position.z.CompareTo(node2.transform.position.z));
         }
@@ -58,7 +64,6 @@ public class Grid : MonoBehaviour
         SetAdjacentTiles();
     }
     private void SetAdjacentTiles() {
-
 
         for (int iRow = 0; iRow < tileMatrix.Count; iRow++) {
             for (int iCol = 0; iCol < tileMatrix[iRow].Count; iCol++) {

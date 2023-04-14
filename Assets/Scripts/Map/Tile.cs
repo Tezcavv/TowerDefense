@@ -14,6 +14,8 @@ public abstract class Tile : MonoBehaviour
 
     public bool IsWalkable => isWalkable;
 
+    public bool IsGoal => isGoal;
+
     public virtual int Row { get => row; set => row = value; }
     public virtual int Column { get => col; set => col = value; }
     public virtual List<Tile> AdjacentTiles { get => tiles; set => tiles = value; }
