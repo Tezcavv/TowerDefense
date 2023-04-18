@@ -10,8 +10,8 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<Enemy> enemyPrefabs;
     [SerializeField] private int amountToPool = 0;
 
-    private List<Enemy> enemyPool;
-    private List<Enemy> activeEnemies;
+    public List<Enemy> enemyPool;
+    public List<Enemy> activeEnemies;
 
 
 
@@ -63,7 +63,7 @@ public class EnemySpawner : MonoBehaviour
     void Update() {
 
 
-        if (Input.GetKeyDown(KeyCode.P)) {
+        if (Input.GetKeyDown(KeyCode.S) && enemyPool.Count > 0) {
             SpawnEnemy();
         }
     }

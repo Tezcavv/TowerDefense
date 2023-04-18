@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
 
 
 
-    public void AddGold(int goldToAdd) {
+    public void SetGold(int goldToAdd) {
 
     }
 

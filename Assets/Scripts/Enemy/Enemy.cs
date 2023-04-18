@@ -37,12 +37,13 @@ public class Enemy : MonoBehaviour
     
 
     private void Start() {
-        PopulateNodes();
+
     }
 
 
     public void Initialize() {
-        
+
+        PopulateNodes();
         transform.position = StartTile.transform.position + new Vector3(0, 1, 0);
         startNode = walkableNodes.First(node => node.tile.transform.position == StartTile.transform.position);
         FindPathToGoal();

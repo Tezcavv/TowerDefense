@@ -8,36 +8,35 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class TowerRangeDisplayer : MonoBehaviour
 {
-    public enum Axis { X, Y, Z };
- 
+   
     [SerializeField]
     [Tooltip("The number of lines that will be used to draw the circle. The more lines, the more the circle will be \"flexible\".")]
     [Range(0, 1000)]
     private int _segments = 60;
- 
-    [SerializeField]
-    [Tooltip("The radius of the horizontal axis.")]
-    private float _horizRadius = 10;
- 
-    [SerializeField]
-    [Tooltip("The radius of the vertical axis.")]
-    private float _vertRadius = 10;
+
+    private float radius;
  
     private LineRenderer _line;
  
     void Start()
     {
+
+        Initialize();
+  
+    }
+  
+    public void Initialize() {
+
         _line = gameObject.GetComponent<LineRenderer>();
 
-        _horizRadius = gameObject.GetComponent<Tower>().RangeRadius;
-        _vertRadius = gameObject.GetComponent<Tower>().RangeRadius;
+        radius = gameObject.GetComponent<Tower>().RangeRadius;
 
         _line.SetVertexCount(_segments + 1);
         _line.useWorldSpace = false;
- 
+
         CreatePoints();
     }
-  
+
     void CreatePoints()
     {
 
@@ -49,8 +48,8 @@ public class TowerRangeDisplayer : MonoBehaviour
  
         for (int i = 0; i < (_segments + 1); i++)
         {
-            x = Mathf.Sin(Mathf.Deg2Rad * angle) * _horizRadius;
-            y = Mathf.Cos(Mathf.Deg2Rad * angle) * _vertRadius;
+            x = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
+            y = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
 
             _line.SetPosition(i, new Vector3(y, 0, x));
 

@@ -43,7 +43,7 @@ public class GridMap : MonoBehaviour
                              .ToList();
 
 
-        int rowCount = 0;
+        //int rowCount = 0;
         //foreach (Tile tile in allTiles) {
 
 
