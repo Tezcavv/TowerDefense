@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
 
-
-    private int playerGold = 0;
+    public static UIManager Instance;
 
     private void Awake() {
         SetInstance();
     }
 
-    public void AddGold(Enemy enemy) {
-        playerGold += enemy.goldOnDeath;
-        Debug.Log(playerGold);
+
+
+    public void AddGold(int goldToAdd) {
+
     }
+
 
 
     private void SetInstance() {

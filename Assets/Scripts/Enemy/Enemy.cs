@@ -16,8 +16,8 @@ public class Enemy : MonoBehaviour
     //stats
     public int hp = 10;
     public Type resistanceType = Type.Normal;
-    public float goldOnDeath = 30f;
-    public int speed = 10;
+    public int goldOnDeath = 30;
+    public float speed = 1;
     private float TimeToCrossATile => 10 / speed;
 
     #region PathFinding Variables
@@ -32,17 +32,22 @@ public class Enemy : MonoBehaviour
     public Tile StartTile;
     #endregion
     
-    public UnityEvent<float> OnDeath;
+    public UnityEvent<Enemy> OnDeath;
     public UnityEvent OnGoalReached;
     
 
     private void Start() {
         PopulateNodes();
+    }
+
+
+    public void Initialize() {
+        
+        transform.position = StartTile.transform.position + new Vector3(0, 1, 0);
         startNode = walkableNodes.First(node => node.tile.transform.position == StartTile.transform.position);
         FindPathToGoal();
 
         MoveToGoalFrom(startNode);
-
     }
 
 
@@ -130,20 +135,19 @@ public class Enemy : MonoBehaviour
         return walkableNodes.Find(node => node.tile.IsGoal);
     }
 
-    private Node nextNode;
     private void MoveToGoalFrom(Node currentNode) {
 
         if (currentNode == goalNode) {
             OnGoalReached?.Invoke();
-            Die();
+            Die(); //da cambiare
             return;
         }
 
-        nextNode = pathToGoal[pathToGoal.IndexOf(currentNode)+1];
+        Node nextNode = pathToGoal[pathToGoal.IndexOf(currentNode)+1];
         Vector3 destination = new Vector3(nextNode.TilePosition.x,
                                             transform.position.y, 
                                             nextNode.TilePosition.z);
-        transform.DOMove(destination, TimeToCrossATile).OnComplete(() => MoveToGoalFrom(nextNode));
+        transform.DOMove(destination, TimeToCrossATile).SetEase(Ease.Linear).OnComplete(() => MoveToGoalFrom(nextNode));
         
     }
 
@@ -168,13 +172,12 @@ public class Enemy : MonoBehaviour
     }
 
     void Die() {
-        OnDeath?.Invoke(goldOnDeath);
+        OnDeath?.Invoke(this);
     }
 
-    private void FixedUpdate() {
-        if (true) {
 
-        }
+    private void OnDisable() {
+        gameObject.transform.DOKill();
     }
 
 

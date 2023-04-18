@@ -7,7 +7,7 @@ public abstract class Tile : MonoBehaviour
 
     protected int row;
     protected int col;
-    protected List<Tile> tiles = new List<Tile>();
+    protected List<Tile> tiles = new();
 
     [SerializeField] protected bool isWalkable = false;
     [SerializeField] protected bool isGoal = false;
