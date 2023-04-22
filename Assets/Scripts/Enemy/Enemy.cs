@@ -14,7 +14,8 @@ public class Enemy : MonoBehaviour
     protected static float resistanceMultiplier = 0.7f;
 
     //stats
-    public int hp = 10;
+    public float initialHp = 10;
+    private float currentHp;
     public Type resistanceType = Type.Normal;
     public int goldOnDeath = 30;
     public float speed = 1;
@@ -32,22 +33,21 @@ public class Enemy : MonoBehaviour
     public Tile StartTile;
     #endregion
     
-    public UnityEvent<Enemy> OnDeath;
+    public UnityEvent<int> OnDeath;
     public UnityEvent OnGoalReached;
     
 
     private void Start() {
-
+        
     }
 
 
     public void Initialize() {
-
+        currentHp = initialHp;
         PopulateNodes();
         transform.position = StartTile.transform.position + new Vector3(0, 1, 0);
         startNode = walkableNodes.First(node => node.tile.transform.position == StartTile.transform.position);
         FindPathToGoal();
-
         MoveToGoalFrom(startNode);
     }
 
@@ -163,24 +163,26 @@ public class Enemy : MonoBehaviour
     //Se muore torna nella pool
     //Se muore guadagni gold
     #endregion
-    public void GetDamage(int damage) {
-        hp -= damage;
+    public void GetDamage(float damage) {
+        currentHp -= damage;
 
-        if (hp <= 0) {
+        if (currentHp <= 0) {
             Die();
+            return;
         }
+
+        gameObject.transform.DOPunchScale(transform.localScale*0.8f, 0.3f,2);
 
     }
 
     void Die() {
-        OnDeath?.Invoke(this);
+        OnDeath?.Invoke(goldOnDeath);
+        Destroy(gameObject);
     }
 
-
-    private void OnDisable() {
+    private void OnDestroy() {
         gameObject.transform.DOKill();
     }
-
 
     //largamente migliorabile
     public float EffectivenessMultiplier(Type enemyDamageType) {

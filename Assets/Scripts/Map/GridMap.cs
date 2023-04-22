@@ -42,21 +42,6 @@ public class GridMap : MonoBehaviour
                              .Select(row => row.ToList())
                              .ToList();
 
-
-        //int rowCount = 0;
-        //foreach (Tile tile in allTiles) {
-
-
-        //    if (tile.transform.position.x == tileMatrix[rowCount][0].transform.position.x) {
-        //        tileMatrix[rowCount].Add(tile);
-        //        continue;
-        //    }
-            
-        //    tileMatrix.Add(new List<Tile> { tile });
-        //    rowCount++;
-
-        //}
-
         foreach (List<Tile> row in tileMatrix) {
             row.Sort((node2, node1) => node1.transform.position.z.CompareTo(node2.transform.position.z));
         }

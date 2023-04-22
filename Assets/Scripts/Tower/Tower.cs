@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -15,7 +16,8 @@ public class Tower : MonoBehaviour
     [SerializeField] private float attackSpeed = 0.6f;
     [SerializeField] private Type damageType = Type.Normal;
 
-    //upgrade-centric fields
+    //cost/upgrade-centric fields
+    [SerializeField] private int baseCost;
     [SerializeField] private float costToUpgrade;
     [SerializeField] private Tower upgradedTower;
 
@@ -24,6 +26,8 @@ public class Tower : MonoBehaviour
 
     //attack fields
     private float timer;
+    [SerializeField] TowerAttack projectile;
+    [SerializeField] GameObject unitOnTop;
 
 
     #region Properties
@@ -32,6 +36,8 @@ public class Tower : MonoBehaviour
     public float AttackSpeed => attackSpeed;
     public Type DamageType => damageType;
     public float CostToUpgrade => costToUpgrade;
+
+    public int BaseCost => baseCost;
 
     #endregion
 
@@ -58,18 +64,21 @@ public class Tower : MonoBehaviour
     void ManageTargetPriority() {
 
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, rangeRadius, 1 << 7);
+        List<Collider> colliders = Physics.OverlapSphere(transform.position, rangeRadius, 1 << 7).ToList();
 
+        if (colliders.Count <= 0) {
+            targetEnemy = null;
+            return; 
+        }
 
-        if (colliders.Length <= 0) {
+        if (targetEnemy && colliders.Contains(targetEnemy.gameObject.GetComponent<Collider>()))
             return;
-        }
-        if (!targetEnemy) {
-            targetEnemy = GetClosestCollider(colliders).GetComponent<Enemy>();
-        }
+
+        targetEnemy = GetClosestCollider(colliders).GetComponent<Enemy>();
+  
     }
 
-    Collider GetClosestCollider(Collider[] colliders) {
+    Collider GetClosestCollider(List<Collider> colliders) {
 
         Collider closest = colliders[0];
 
@@ -87,9 +96,16 @@ public class Tower : MonoBehaviour
 
     #endregion
 
+
     #region Attack
     private void Attack(Enemy targetEnemy) {
-        Debug.Log("Attacco");
+
+        //the unit will turn to the enemy when attacking
+        //unitOnTop.transform.DOLookAt(targetEnemy.transform.position, 0.1f,ax, vec);
+
+        TowerAttack attack = Instantiate(projectile, unitOnTop.transform.position,transform.rotation);
+        attack.Shoot(targetEnemy,this);
+
     }
     #endregion
 

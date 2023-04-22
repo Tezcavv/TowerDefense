@@ -27,11 +27,12 @@ public class TowerRangeDisplayer : MonoBehaviour
   
     public void Initialize() {
 
+
         _line = gameObject.GetComponent<LineRenderer>();
 
         radius = gameObject.GetComponent<Tower>().RangeRadius;
 
-        _line.SetVertexCount(_segments + 1);
+        _line.positionCount= _segments +1 ;
         _line.useWorldSpace = false;
 
         CreatePoints();
@@ -48,8 +49,8 @@ public class TowerRangeDisplayer : MonoBehaviour
  
         for (int i = 0; i < (_segments + 1); i++)
         {
-            x = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;
-            y = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
+            x = Mathf.Sin(Mathf.Deg2Rad * angle) * radius / transform.localScale.x;
+            y = Mathf.Cos(Mathf.Deg2Rad * angle) * radius / transform.localScale.y;
 
             _line.SetPosition(i, new Vector3(y, 0, x));
 

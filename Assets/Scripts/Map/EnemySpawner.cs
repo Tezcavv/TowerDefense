@@ -2,69 +2,71 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 using Random = UnityEngine.Random;
 
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private List<Tile> spawnTiles;
     [SerializeField] private List<Enemy> enemyPrefabs;
-    [SerializeField] private int amountToPool = 0;
 
-    public List<Enemy> enemyPool;
-    public List<Enemy> activeEnemies;
+    [SerializeField] private float spawnIntervalSeconds = 2f;
+    [SerializeField] private float increaseDifficultyTimer = 10f;
+    public float difficultyLevel = 1;
+    private bool keepSpawning;
 
 
 
 
     // Start is called before the first frame update
     void Start() {
-        enemyPool = new List<Enemy>();
-       // per adesso voglio X nemici di ogni tipo disponibili
-        for (int i = 0; i < amountToPool; i++) {
-            foreach (Enemy enemy in enemyPrefabs) {
-                enemyPool.Add(Instantiate(enemy));
-            }
+        keepSpawning = true;
+
+        StartCoroutine(IncreaseDifficulty());
+        StartCoroutine(SpawnEnemy());
+
+    }
+
+    private IEnumerator IncreaseDifficulty() {
+
+        while (keepSpawning && spawnIntervalSeconds > 0.4f) {
+            yield return new WaitForSeconds(increaseDifficultyTimer);
+            difficultyLevel += 0.2f;
+            spawnIntervalSeconds -= 0.2f;
+            
         }
-        enemyPool.ForEach(enemy => {
+
+        StopSpawn();
+
+    }
+
+    public IEnumerator SpawnEnemy() {
+
+        while (keepSpawning) {
+
+            Enemy enemy = Instantiate(enemyPrefabs[Random.Range(0,enemyPrefabs.Count)]);
+            enemy.StartTile = spawnTiles[Random.Range(0, spawnTiles.Count)];
+            enemy.Initialize();
+            enemy.speed *= difficultyLevel;
+            enemy.initialHp *= difficultyLevel;
             enemy.OnDeath.AddListener(OnEnemyDeath);
-            enemy.gameObject.SetActive(false);
-        });
-    }
+            enemy.OnGoalReached.AddListener(OnGoalReached);
 
-    public void SpawnEnemy() {
-
-        Enemy toSpawn = enemyPool[Random.Range(0, enemyPool.Count)];
-
-        enemyPool.Remove(toSpawn);
-        activeEnemies.Add(toSpawn);
-
-        toSpawn.gameObject.SetActive(true);
-        toSpawn.StartTile = spawnTiles[Random.Range(0, spawnTiles.Count)];
-        toSpawn.Initialize();
-
-    }
-
-
-    public void OnEnemyDeath(Enemy enemy) {
-
-        GameManager.Instance.AddGold(enemy);
-
-        enemy.gameObject.SetActive(false);
-
-        activeEnemies.Remove(enemy);
-        enemyPool.Add(enemy);
-
-
-    }
-
-
-
-    // Spawn Manuale per testing
-    void Update() {
-
-
-        if (Input.GetKeyDown(KeyCode.S) && enemyPool.Count > 0) {
-            SpawnEnemy();
+            yield return new WaitForSeconds(spawnIntervalSeconds);
         }
     }
+
+    public void StopSpawn() {
+        keepSpawning = false;
+    }
+
+
+    public void OnEnemyDeath(int enemyGold) {
+        GameManager.Instance.AddGold(enemyGold);
+    }
+
+    public void OnGoalReached() {
+        GameManager.Instance.GameOver();
+    }
+
 }
