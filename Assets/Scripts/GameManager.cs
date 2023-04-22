@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private Tower towerToSpawn;
+    [SerializeField]private GameObject towerIndicator;
     [SerializeField] private int playerGold = 120;
 
     public bool isPlacingTower;
@@ -49,16 +51,32 @@ public class GameManager : MonoBehaviour
         }
         towerToSpawn = towerToBeSpawned;
         isPlacingTower = true;
+        towerIndicator.gameObject.SetActive(true);
     }
 
     private void HandlePlacingTower() {
 
-
+        HandleIndicatorTower();
+        
 
         if (Input.GetMouseButtonDown(0)) {
             SpawnTower();
             isPlacingTower = false;
+            towerIndicator.gameObject.SetActive(false);
         }
+    }
+
+    private void HandleIndicatorTower() {
+        // TODO
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (!Physics.Raycast(ray, out hit, 100, 1 << 6)) {
+
+        }
+        if (!hit.point.IsUnityNull())
+            towerIndicator.transform.position = hit.point;
+
     }
 
     public void SpawnTower() {
@@ -77,6 +95,7 @@ public class GameManager : MonoBehaviour
         float offsetY= tile.GetComponent<MeshRenderer>().bounds.size.y/2;
         Instantiate(towerToSpawn, tile.transform.position + new Vector3(0, offsetY, 0),tile.transform.rotation);
         PlayerGold -= towerToSpawn.BaseCost;
+        
     }
 
     public void GameOver() {

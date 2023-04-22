@@ -48,7 +48,7 @@ public class EnemySpawner : MonoBehaviour
             enemy.StartTile = spawnTiles[Random.Range(0, spawnTiles.Count)];
             enemy.Initialize();
             enemy.speed *= difficultyLevel;
-            enemy.initialHp *= difficultyLevel;
+            enemy.initialHp *= difficultyLevel*2;
             enemy.OnDeath.AddListener(OnEnemyDeath);
             enemy.OnGoalReached.AddListener(OnGoalReached);
 
