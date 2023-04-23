@@ -3148,7 +3148,7 @@ MonoBehaviour:
   - {fileID: 937032268}
   - {fileID: 1657864107}
   enemyPrefabs:
-  - {fileID: 6333023250716941273, guid: 7fc653ba8c59ace438e9214ed7efa2cc, type: 3}
+  - {fileID: 8972220950685298730, guid: 1ade23971a19a7b48853bd5e6a1cc939, type: 3}
   spawnIntervalSeconds: 2.5
   increaseDifficultyTimer: 10
   difficultyLevel: 1

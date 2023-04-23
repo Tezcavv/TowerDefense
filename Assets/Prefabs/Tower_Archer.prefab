@@ -290,7 +290,7 @@ MonoBehaviour:
   baseCost: 60
   costToUpgrade: 0
   upgradedTower: {fileID: 0}
-  projectile: {fileID: 7442347790968567250, guid: fb5d7c07d280ed44c89f6d6da8598f23,
+  projectile: {fileID: 5558047926031321180, guid: 7b34670a5f15d40498f77eb6a2c15d8e,
     type: 3}
   unitOnTop: {fileID: 6633017985032318259}
 --- !u!1 &544901557576423072

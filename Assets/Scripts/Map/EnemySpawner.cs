@@ -31,7 +31,7 @@ public class EnemySpawner : MonoBehaviour
 
         while (keepSpawning && spawnIntervalSeconds > 0.4f) {
             yield return new WaitForSeconds(increaseDifficultyTimer);
-            difficultyLevel += 0.2f;
+            difficultyLevel += 0.1f;
             spawnIntervalSeconds -= 0.2f;
             
         }
@@ -46,9 +46,10 @@ public class EnemySpawner : MonoBehaviour
 
             Enemy enemy = Instantiate(enemyPrefabs[Random.Range(0,enemyPrefabs.Count)]);
             enemy.StartTile = spawnTiles[Random.Range(0, spawnTiles.Count)];
-            enemy.Initialize();
             enemy.speed *= difficultyLevel;
-            enemy.initialHp *= difficultyLevel*2;
+            enemy.initialHp *= difficultyLevel ;
+            enemy.transform.localScale *= difficultyLevel;
+            enemy.Initialize();
             enemy.OnDeath.AddListener(OnEnemyDeath);
             enemy.OnGoalReached.AddListener(OnGoalReached);
 

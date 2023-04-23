@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     protected static float resistanceMultiplier = 0.7f;
 
     //stats
-    public float initialHp = 10;
+    public float initialHp;
     private float currentHp;
     public Type resistanceType = Type.Normal;
     public int goldOnDeath = 30;
@@ -148,6 +148,7 @@ public class Enemy : MonoBehaviour
         Vector3 destination = new Vector3(nextNode.TilePosition.x,
                                             transform.position.y, 
                                             nextNode.TilePosition.z);
+        transform.DOLookAt(destination, 0.3f);
         transform.DOMove(destination, TimeToCrossATile).SetEase(Ease.Linear).OnComplete(() => MoveToGoalFrom(nextNode));
         
     }
@@ -160,8 +161,7 @@ public class Enemy : MonoBehaviour
 
     }
 
-    //Se muore torna nella pool
-    //Se muore guadagni gold
+
     #endregion
     public void GetDamage(float damage) {
         currentHp -= damage;
@@ -171,7 +171,7 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        gameObject.transform.DOPunchScale(transform.localScale*0.8f, 0.3f,2);
+        gameObject.transform.DOPunchScale(transform.localScale/2, 0.3f,1,0.5f);
 
     }
 
