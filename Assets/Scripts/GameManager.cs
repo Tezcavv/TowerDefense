@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -83,6 +84,10 @@ public class GameManager : MonoBehaviour
         Instantiate(towerToSpawn, tile.transform.position + new Vector3(0, offsetY, 0),tile.transform.rotation);
         PlayerGold -= towerToSpawn.BaseCost;
         
+    }
+
+    public void GameWon(TextMeshProUGUI text) {
+        text.gameObject.SetActive(true);
     }
 
     public void GameOver() {
