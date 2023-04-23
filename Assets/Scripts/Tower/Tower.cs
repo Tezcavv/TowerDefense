@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public enum Type { Fire, Grass, Water, Normal }
 
@@ -101,7 +102,11 @@ public class Tower : MonoBehaviour
     private void Attack(Enemy targetEnemy) {
 
         //the unit will turn to the enemy when attacking
-        //unitOnTop.transform.DOLookAt(targetEnemy.transform.position, 0.1f,ax, vec);
+        
+        Vector3 targetPostition = new Vector3(targetEnemy.transform.position.x,
+                                              this.transform.position.y,
+                                              targetEnemy.transform.position.z);
+        unitOnTop.transform.DOLookAt(targetPostition, 0.1f);
 
         TowerAttack attack = Instantiate(projectile, unitOnTop.transform.position,transform.rotation);
         attack.Shoot(targetEnemy,this);

@@ -14,11 +14,19 @@ public class GridMap : MonoBehaviour
     private  List<Tile> walkableTiles= new List<Tile>();
     private  List<Tile> buildableTiles = new List<Tile>();
 
+    [SerializeField] private List<Material> walkableTilesMaterial;
+    [SerializeField] private List<Material> buildableTilesMaterial;
+
+
+
     private List<List<Tile>> tileMatrix;
 
     #region Properties / Getters
     public  List<Tile> BuildableTiles => buildableTiles;
     public  List<Tile> WalkableTiles=> walkableTiles;
+
+    public List<Material> BuildableTilesMaterial => buildableTilesMaterial;
+    public List<Material> WalkableTilesMaterial => walkableTilesMaterial;
     #endregion
 
     private void Awake() {

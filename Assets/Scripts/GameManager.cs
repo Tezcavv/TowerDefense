@@ -56,7 +56,6 @@ public class GameManager : MonoBehaviour
 
     private void HandlePlacingTower() {
 
-        HandleIndicatorTower();
         
 
         if (Input.GetMouseButtonDown(0)) {
@@ -66,18 +65,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void HandleIndicatorTower() {
-        // TODO
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (!Physics.Raycast(ray, out hit, 100, 1 << 6)) {
-
-        }
-        if (!hit.point.IsUnityNull())
-            towerIndicator.transform.position = hit.point;
-
-    }
 
     public void SpawnTower() {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
